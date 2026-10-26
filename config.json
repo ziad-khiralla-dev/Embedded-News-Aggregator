@@ -1,0 +1,10 @@
+{
+  "rss_feeds": [
+    "https://hackaday.com/blog/feed/",
+    "https://www.cnx-software.com/feed/",
+    "https://www.embedded.com/feed/",
+    "https://www.elektor.com/blogs/news.atom",
+    "https://blogs.mathworks.com/automotive/feed/",
+    "https://embeddedartistry.com/feed/"
+  ]
+}
