@@ -22,7 +22,7 @@ st.markdown("""
         background-color: #111827;
         border: 1px solid #1f2937;
         border-radius: 8px;
-        padding: 12px 16px; /* مساحات داخلية أصغر وأكثر تناسقاً */
+        padding: 12px 16px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
         height: 100%;
         transition: all 0.3s ease;
@@ -78,10 +78,16 @@ col1, col2 = st.columns([1, 4])
 with col1:
     fetch_btn = st.button("🔄 Fetch Latest News", use_container_width=True)
 
-# 5. Fetch Logic
+# Caching for 10 minutes
+@st.cache_data(ttl=600)
+def get_cached_news():
+    return fetch_all_news()
+
+# Fetch Logic
 if fetch_btn or "articles" not in st.session_state:
-    with st.spinner("Fetching the latest news from the world of embedded systems and automotive software engineering..."):
-        st.session_state["articles"] = fetch_all_news()
+    st.cache_data.clear()
+    with st.spinner("Fetching latest embedded news at rocket speed..."):
+        st.session_state["articles"] = get_cached_news()
 
 articles = st.session_state.get("articles", [])
 
@@ -90,10 +96,9 @@ if not articles:
 else:
     st.success(f"Successfully loaded {len(articles)} articles!")
     
-    # 6. Grid Layout: Display 3 Cards per row
+    # Grid Layout: Display 3 Cards per row
     cards_per_row = 3
     
-    # Loop through articles in chunks of 3
     for i in range(0, len(articles), cards_per_row):
         row_articles = articles[i:i + cards_per_row]
         cols = st.columns(cards_per_row)
@@ -105,13 +110,13 @@ else:
                     if item["is_new"]:
                         st.subheader(f"✨ {item['title']}")
                     else:
-                        st.subheader(item["title"])
+                        st.subheader(item['title'])
                         
                     st.caption(f"📌 Source: **{item['source']}**")
                     
-                    # Compact summary expander
-                    with st.expander("📖 Read Summary"):
+                    # Snippet expander
+                    with st.expander("📖 Read Snippet"):
                         st.write(item["summary"])
                         
                     # Action link
-                    st.markdown(f"🔗 [Read Article]({item['link']})")
+                    st.markdown(f"🔗 [Read Full Article]({item['link']})")
